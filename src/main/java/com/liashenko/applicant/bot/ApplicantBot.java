@@ -1,5 +1,7 @@
 package com.liashenko.applicant.bot;
 
+import com.liashenko.applicant.command.CommandMatcher;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -9,19 +11,25 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
 public class ApplicantBot extends TelegramLongPollingBot {
+    private final CommandMatcher commandMatcher;
+
     @Value("${bot.userName}")
     private String userName;
 
-    public ApplicantBot(@Value("${bot.token}") String token) {
+    @Autowired
+    public ApplicantBot(@Value("${bot.token}") String token, CommandMatcher commandMatcher) {
         super(token);
+        this.commandMatcher = commandMatcher;
     }
 
     @Override
     public void onUpdateReceived(Update update) {
         if (!update.hasMessage()) return;
 
-        String messageText = update.getMessage().getText();
         Long chatId = update.getMessage().getChatId();
+        String messageText = update.getMessage().getText();
+
+        this.commandMatcher.match(chatId, messageText);
     }
 
     @Override
@@ -29,7 +37,7 @@ public class ApplicantBot extends TelegramLongPollingBot {
         return this.userName;
     }
 
-    private void sendMessage(Long chatId, String text) {
+    public void sendMessage(Long chatId, String text) {
         String chatIdStr = chatId.toString();
         SendMessage sendMessage = new SendMessage(chatIdStr, text);
 
