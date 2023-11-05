@@ -22,9 +22,6 @@ public class ApplicantBot extends TelegramLongPollingBot {
 
         String messageText = update.getMessage().getText();
         Long chatId = update.getMessage().getChatId();
-        System.out.println(messageText);
-        System.out.println(chatId);
-        this.sendMessage(chatId, "test");
     }
 
     @Override
