@@ -23,6 +23,9 @@ public class CommandMatcher {
         if (commandKey.equals("/getInfoAboutSpeciality")) {
             CommandGetSpeciality commandGetSpeciality = new CommandGetSpeciality(chatId, facultyService, applicantBot);
             commandGetSpeciality.execute();
+        } else if (commandKey.equals("/start")) {
+            CommandGreeting commandGreeting = new CommandGreeting(chatId, applicantBot);
+            commandGreeting.execute();
         }
     }
 }
