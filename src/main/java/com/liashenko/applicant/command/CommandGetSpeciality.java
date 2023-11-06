@@ -1,6 +1,7 @@
 package com.liashenko.applicant.command;
 
 import com.liashenko.applicant.bot.ApplicantBot;
+import com.liashenko.applicant.entity.BranchOfKnowledge;
 import com.liashenko.applicant.entity.Faculty;
 import com.liashenko.applicant.service.FacultyService;
 import lombok.Data;
@@ -24,7 +25,20 @@ public class CommandGetSpeciality implements Command {
 
         for (Faculty faculty: faculties) {
             String name = faculty.getName();
-            stringBuilder.append(name).append("\n");
+
+            stringBuilder
+                    .append(name)
+                    .append("\n");
+
+            Iterable<BranchOfKnowledge> branchOfKnowledges = faculty.getBranchOfKnowledges();
+
+            for (BranchOfKnowledge branchOfKnowledge: branchOfKnowledges) {
+                String nameBranchOfKnowledge = branchOfKnowledge.getName();
+                stringBuilder
+                        .append("--")
+                        .append(nameBranchOfKnowledge)
+                        .append("\n");
+            }
         }
 
         String outPutText = stringBuilder.toString();

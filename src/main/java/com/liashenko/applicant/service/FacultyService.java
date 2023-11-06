@@ -15,6 +15,6 @@ public class FacultyService {
     }
 
     public Iterable<Faculty> getFaculties() {
-        return this.facultyRepository.findAll();
+        return this.facultyRepository.findFacultiesWithBranchOfKnowledge();
     }
 }
