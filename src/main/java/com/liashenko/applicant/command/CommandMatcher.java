@@ -1,31 +1,39 @@
 package com.liashenko.applicant.command;
 
 import com.liashenko.applicant.bot.ApplicantBot;
-import com.liashenko.applicant.service.FacultyService;
+import com.liashenko.applicant.dtos.response.EducationProgramResponseDto;
+import com.liashenko.applicant.service.EducationProgramService;
+import com.liashenko.applicant.service.TextFormatService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Data
 @Component
 public class CommandMatcher {
-    private final FacultyService facultyService;
+    private final EducationProgramService educationProgramService;
     private final ApplicantBot applicantBot;
+    private final TextFormatService textFormatService;
 
     @Autowired
-    public CommandMatcher(FacultyService facultyService, @Lazy ApplicantBot applicantBot) {
-        this.facultyService = facultyService;
+    public CommandMatcher(TextFormatService textFormatService, EducationProgramService educationProgramService, @Lazy ApplicantBot applicantBot) {
         this.applicantBot = applicantBot;
+        this.educationProgramService = educationProgramService;
+        this.textFormatService = textFormatService;
     }
 
     public void match(Long chatId, String commandKey) {
-        if (commandKey.equals("/getInfoAboutSpeciality")) {
-            CommandGetSpeciality commandGetSpeciality = new CommandGetSpeciality(chatId, facultyService, applicantBot);
-            commandGetSpeciality.execute();
-        } else if (commandKey.equals("/start")) {
-            CommandGreeting commandGreeting = new CommandGreeting(chatId, applicantBot);
-            commandGreeting.execute();
+        if (commandKey.equals("/getEducationPrograms")) {
+            this.handleEducationPrograms(chatId);
         }
+    }
+
+    public void handleEducationPrograms(Long chatId) {
+        List<EducationProgramResponseDto> educationProgramResponseDtos = this.educationProgramService.getAll();
+        String messageText = this.textFormatService.EducationProgramDtosToText(educationProgramResponseDtos);
+        this.applicantBot.sendMessage(chatId, messageText);
     }
 }
