@@ -22,6 +22,6 @@ public class Speciality {
     @JoinColumn(name = "branch_of_knowledges_id", nullable = false)
     private BranchOfKnowledge branchOfKnowledge;
 
-    @OneToMany(mappedBy = "speciality")
+    @OneToMany(mappedBy = "speciality", fetch = FetchType.EAGER)
     private List<EducationProgram> educationPrograms = new ArrayList<>();
 }
