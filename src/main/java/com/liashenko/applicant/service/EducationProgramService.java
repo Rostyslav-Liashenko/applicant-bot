@@ -3,6 +3,7 @@ package com.liashenko.applicant.service;
 import com.liashenko.applicant.dtos.response.EducationProgramResponseDto;
 import com.liashenko.applicant.entity.EducationProgram;
 import com.liashenko.applicant.repository.EducationProgramRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.stream.StreamSupport;
 public class EducationProgramService {
     private final EducationProgramRepository educationProgramRepository;
 
+    @Autowired
     public EducationProgramService(EducationProgramRepository educationProgramRepository) {
         this.educationProgramRepository = educationProgramRepository;
     }
