@@ -40,12 +40,17 @@ public class CommandMatcher {
     }
 
     public void match(Long chatId, String commandKey) {
-        if (commandKey.equals("/getEducationPrograms")) {
-            this.handleEducationPrograms(chatId);
-        } else if (commandKey.equals("/getDocumentAdmission")) {
-            this.handleAdmissionDocument(chatId);
-        } else if (commandKey.equals("/getSpeciality")) {
-            this.handleSpeciality(chatId);
+        switch (commandKey) {
+            case "/getEducationPrograms" -> this.handleEducationPrograms(chatId);
+            case "/getDocumentAdmission" -> this.handleAdmissionDocument(chatId);
+            case "/getSpeciality" -> this.handleSpeciality(chatId);
+            case "/start" -> this.handleGreeting(chatId);
+        }
+    }
+
+    public void matchCallback(Long chatId, String callbackName) {
+        switch (callbackName) {
+            case "/getSpeciality" -> this.handleSpeciality(chatId);
         }
     }
 
@@ -65,5 +70,9 @@ public class CommandMatcher {
         List<SpecialityResponseDto> specialityResponseDtos = this.specialityService.getAll();
         String messageText = this.textFormatService.specialityDtosToText(specialityResponseDtos);
         this.applicantBot.sendMessage(chatId, messageText);
+    }
+
+    public void handleGreeting(Long chatId) {
+        this.applicantBot.Greeting(chatId);
     }
 }

@@ -7,7 +7,12 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class ApplicantBot extends TelegramLongPollingBot {
@@ -24,12 +29,17 @@ public class ApplicantBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (!update.hasMessage()) return;
+        if (update.hasMessage()) {
+            Long chatId = update.getMessage().getChatId();
+            String messageText = update.getMessage().getText();
 
-        Long chatId = update.getMessage().getChatId();
-        String messageText = update.getMessage().getText();
+            this.commandMatcher.match(chatId, messageText);
+        } else if (update.hasCallbackQuery()) {
+            String callbackData = update.getCallbackQuery().getData();
+            Long chatId = update.getCallbackQuery().getMessage().getChatId();
 
-        this.commandMatcher.match(chatId, messageText);
+            this.commandMatcher.matchCallback(chatId, callbackData);
+        }
     }
 
     @Override
@@ -38,13 +48,46 @@ public class ApplicantBot extends TelegramLongPollingBot {
     }
 
     public void sendMessage(Long chatId, String text) {
-        String chatIdStr = chatId.toString();
-        SendMessage sendMessage = new SendMessage(chatIdStr, text);
+        SendMessage sendMessage = this.createSendMessage(chatId, text);
 
         try {
             execute(sendMessage);
         } catch (TelegramApiException telegramApiException) {
             System.out.println("Error: " + telegramApiException.getMessage());
         }
+    }
+
+    public void Greeting(Long chatId) {
+        String text = "Привіт, я бот абітурієнт чдту";
+        SendMessage sendMessage = this.createSendMessage(chatId, text);
+        InlineKeyboardMarkup inlineKeyboardMarkup = this.getGreetingReplyMarkup();
+        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException telegramApiException) {
+            System.out.println("Error: " + telegramApiException.getMessage());
+        }
+    }
+
+    private InlineKeyboardMarkup getGreetingReplyMarkup() {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<InlineKeyboardButton> buttons = new ArrayList<>();
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+
+        InlineKeyboardButton getSpecialityButton = new InlineKeyboardButton("Дізнатися про всі спецільності");
+        getSpecialityButton.setCallbackData("/getSpeciality");
+
+        buttons.add(getSpecialityButton);
+        keyboard.add(buttons);
+        inlineKeyboardMarkup.setKeyboard(keyboard);
+
+        return inlineKeyboardMarkup;
+    }
+
+    private SendMessage createSendMessage(Long chatId, String text) {
+        String chatIdStr = chatId.toString();
+
+        return new SendMessage(chatIdStr, text);
     }
 }
