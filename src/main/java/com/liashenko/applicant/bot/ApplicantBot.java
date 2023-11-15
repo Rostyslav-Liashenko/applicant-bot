@@ -77,8 +77,11 @@ public class ApplicantBot extends TelegramLongPollingBot {
 
         InlineKeyboardButton getSpecialityButton = new InlineKeyboardButton("Дізнатися про всі спецільності");
         getSpecialityButton.setCallbackData("/getSpeciality");
+        InlineKeyboardButton getDocumentAdmissionButton = new InlineKeyboardButton("Дізнатися про необхідні документи");
+        getDocumentAdmissionButton.setCallbackData("/getDocumentAdmission");
 
         buttons.add(getSpecialityButton);
+        buttons.add(getDocumentAdmissionButton);
         keyboard.add(buttons);
         inlineKeyboardMarkup.setKeyboard(keyboard);
 

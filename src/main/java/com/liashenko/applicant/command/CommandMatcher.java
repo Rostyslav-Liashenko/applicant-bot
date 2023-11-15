@@ -51,6 +51,7 @@ public class CommandMatcher {
     public void matchCallback(Long chatId, String callbackName) {
         switch (callbackName) {
             case "/getSpeciality" -> this.handleSpeciality(chatId);
+            case "/getDocumentAdmission" -> this.handleAdmissionDocument(chatId);
         }
     }
 
