@@ -20,6 +20,7 @@ public class CommandMatcher {
     private final DocumentAdmissionService documentAdmissionService;
     private final SpecialityService specialityService;
     private final CostEducationService costEducationService;
+    private final InfoService infoService;
     private final ApplicantBot applicantBot;
     private final TextFormatService textFormatService;
 
@@ -30,6 +31,7 @@ public class CommandMatcher {
             DocumentAdmissionService documentAdmissionService,
             SpecialityService specialityService,
             CostEducationService costEducationService,
+            InfoService infoService,
             @Lazy ApplicantBot applicantBot
     ) {
         this.applicantBot = applicantBot;
@@ -38,6 +40,7 @@ public class CommandMatcher {
         this.costEducationService = costEducationService;
         this.specialityService = specialityService;
         this.textFormatService = textFormatService;
+        this.infoService = infoService;
     }
 
     public void match(Long chatId, String commandKey) {
@@ -46,6 +49,7 @@ public class CommandMatcher {
             case "/getDocumentAdmission" -> this.handleAdmissionDocument(chatId);
             case "/getSpeciality" -> this.handleSpeciality(chatId);
             case "/getCostEducation" -> this.handleCostEducation(chatId);
+            case "/getConsultationCenterSchedule" -> this.handleConsultationCenterSchedule(chatId);
             case "/start" -> this.handleGreeting(chatId);
         }
     }
@@ -88,5 +92,10 @@ public class CommandMatcher {
 
     public void handleGreeting(Long chatId) {
         this.applicantBot.Greeting(chatId);
+    }
+
+    public void handleConsultationCenterSchedule(Long chatId) {
+        String messageAboutConsultationCenterSchedule = this.infoService.getConsultationCenterSchedule();
+        this.applicantBot.sendMessage(chatId, messageAboutConsultationCenterSchedule);
     }
 }
