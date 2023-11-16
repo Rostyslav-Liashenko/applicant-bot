@@ -57,7 +57,8 @@ public class CommandMatcher {
 
     public void handleEducationPrograms(Long chatId) {
         List<EducationProgramResponseDto> educationProgramResponseDtos = this.educationProgramService.getAll();
-        String messageText = this.textFormatService.educationProgramDtosToText(educationProgramResponseDtos);
+        int countShiftText = 0;
+        String messageText = this.textFormatService.educationProgramDtosToText(educationProgramResponseDtos, countShiftText);
         this.applicantBot.sendMessage(chatId, messageText);
     }
 

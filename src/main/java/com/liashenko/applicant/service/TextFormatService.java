@@ -9,11 +9,18 @@ import java.util.List;
 
 @Service
 public class TextFormatService {
-    public String educationProgramDtosToText(List<EducationProgramResponseDto> educationProgramResponseDtos) {
+    public String educationProgramDtosToText(
+            List<EducationProgramResponseDto> educationProgramResponseDtos,
+            int countShifts
+    ) {
         StringBuilder stringBuilder = new StringBuilder();
 
         for (EducationProgramResponseDto educationProgram : educationProgramResponseDtos) {
-            stringBuilder.append(educationProgram.getName()).append("\n");
+            String shifts = "-".repeat(countShifts);
+            stringBuilder
+                    .append(shifts)
+                    .append(educationProgram.getName())
+                    .append("\n");
         }
 
         return stringBuilder.toString();
@@ -31,13 +38,20 @@ public class TextFormatService {
 
     public String specialityDtosToText(List<SpecialityResponseDto> specialityResponseDtos) {
         StringBuilder stringBuilder = new StringBuilder();
+        int countShiftText = 2;
 
         for (SpecialityResponseDto specialityResponseDto: specialityResponseDtos) {
+            String educationText = this.educationProgramDtosToText(
+                    specialityResponseDto.getEducationProgramResponseDtos(),
+                    countShiftText
+            );
+
             stringBuilder
                     .append(specialityResponseDto.getCode())
                     .append(" ")
                     .append(specialityResponseDto.getName())
-                    .append("\n");
+                    .append("\n")
+                    .append(educationText);
         }
 
         return stringBuilder.toString();
