@@ -16,7 +16,7 @@ public class FileService {
     private final String baseUrl;
 
     public FileService() {
-        this.baseUrl = "static/documents/";
+        this.baseUrl = "static/";
     }
 
     public InputFile getFileByPath(String path) throws IOException {

@@ -1,13 +1,11 @@
 package com.liashenko.applicant.command;
 
 import com.liashenko.applicant.bot.ApplicantBot;
+import com.liashenko.applicant.dtos.response.CostEducationResponseDto;
 import com.liashenko.applicant.dtos.response.DocumentAdmissionResponseDto;
 import com.liashenko.applicant.dtos.response.EducationProgramResponseDto;
 import com.liashenko.applicant.dtos.response.SpecialityResponseDto;
-import com.liashenko.applicant.service.DocumentAdmissionService;
-import com.liashenko.applicant.service.EducationProgramService;
-import com.liashenko.applicant.service.SpecialityService;
-import com.liashenko.applicant.service.TextFormatService;
+import com.liashenko.applicant.service.*;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -21,6 +19,7 @@ public class CommandMatcher {
     private final EducationProgramService educationProgramService;
     private final DocumentAdmissionService documentAdmissionService;
     private final SpecialityService specialityService;
+    private final CostEducationService costEducationService;
     private final ApplicantBot applicantBot;
     private final TextFormatService textFormatService;
 
@@ -30,11 +29,13 @@ public class CommandMatcher {
             EducationProgramService educationProgramService,
             DocumentAdmissionService documentAdmissionService,
             SpecialityService specialityService,
+            CostEducationService costEducationService,
             @Lazy ApplicantBot applicantBot
     ) {
         this.applicantBot = applicantBot;
         this.educationProgramService = educationProgramService;
         this.documentAdmissionService = documentAdmissionService;
+        this.costEducationService = costEducationService;
         this.specialityService = specialityService;
         this.textFormatService = textFormatService;
     }
@@ -44,6 +45,7 @@ public class CommandMatcher {
             case "/getEducationPrograms" -> this.handleEducationPrograms(chatId);
             case "/getDocumentAdmission" -> this.handleAdmissionDocument(chatId);
             case "/getSpeciality" -> this.handleSpeciality(chatId);
+            case "/getCostEducation" -> this.handleCostEducation(chatId);
             case "/start" -> this.handleGreeting(chatId);
         }
     }
@@ -72,6 +74,16 @@ public class CommandMatcher {
         List<SpecialityResponseDto> specialityResponseDtos = this.specialityService.getAll();
         String messageText = this.textFormatService.specialityDtosToText(specialityResponseDtos);
         this.applicantBot.sendMessage(chatId, messageText);
+    }
+
+    public void handleCostEducation(Long chatId) {
+        List<CostEducationResponseDto> costEducationResponseDtos = this.costEducationService.getAll();
+
+        for (CostEducationResponseDto costEducationResponseDto: costEducationResponseDtos) {
+            String path = costEducationResponseDto.getPathToFile();
+            String caption = costEducationResponseDto.getDescription();
+            this.applicantBot.sendDocument(chatId, path, caption);
+        }
     }
 
     public void handleGreeting(Long chatId) {
