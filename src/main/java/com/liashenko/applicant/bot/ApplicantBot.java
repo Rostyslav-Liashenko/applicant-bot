@@ -1,30 +1,36 @@
 package com.liashenko.applicant.bot;
 
 import com.liashenko.applicant.command.CommandMatcher;
+import com.liashenko.applicant.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class ApplicantBot extends TelegramLongPollingBot {
     private final CommandMatcher commandMatcher;
+    private final FileService fileService;
 
     @Value("${bot.userName}")
     private String userName;
 
     @Autowired
-    public ApplicantBot(@Value("${bot.token}") String token, CommandMatcher commandMatcher) {
+    public ApplicantBot(@Value("${bot.token}") String token, CommandMatcher commandMatcher, FileService fileService) {
         super(token);
         this.commandMatcher = commandMatcher;
+        this.fileService = fileService;
     }
 
     @Override
@@ -52,6 +58,26 @@ public class ApplicantBot extends TelegramLongPollingBot {
 
         try {
             execute(sendMessage);
+        } catch (TelegramApiException telegramApiException) {
+            System.out.println("Error: " + telegramApiException.getMessage());
+        }
+    }
+
+    public void sendDocument(Long chatId, String path, String messageCaption) {
+        SendDocument sendDocument = new SendDocument();
+        sendDocument.setChatId(chatId);
+        sendDocument.setCaption(messageCaption);
+
+        try {
+            InputFile file = this.fileService.getFileByPath(path);
+            sendDocument.setDocument(file);
+        } catch (IOException exception) {
+            System.out.println("problem with file by path:" + path);
+            return;
+        }
+
+        try {
+            execute(sendDocument);
         } catch (TelegramApiException telegramApiException) {
             System.out.println("Error: " + telegramApiException.getMessage());
         }
