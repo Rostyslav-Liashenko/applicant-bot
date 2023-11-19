@@ -58,15 +58,15 @@ public class CommandMatcher {
         Long chatId = message.getChatId();
 
         switch (commandKey) {
-            case "/getEducationPrograms" -> this.handleEducationPrograms(chatId);
-            case "/getDocumentAdmission" -> this.handleAdmissionDocument(chatId);
-            case "/getSpeciality" -> this.handleSpeciality(chatId);
-            case "/getCostEducation" -> this.handleCostEducation(chatId);
-            case "/getConsultationCenterSchedule" -> this.handleConsultationCenterSchedule(chatId);
-            case "/getAdmissionRules" -> this.handleAdmissionRules(chatId);
-            case "/getOpenDays" -> this.handleOpenDays(chatId);
-            case "/enableNotifications" -> this.handleEnableNotification(update);
-            case "/disabledNotifications" -> this.handleDisabledNotification(chatId);
+            case "/get_education_programs" -> this.handleEducationPrograms(chatId);
+            case "/get_document_admission" -> this.handleAdmissionDocument(chatId);
+            case "/get_speciality" -> this.handleSpeciality(chatId);
+            case "/get_cost_education" -> this.handleCostEducation(chatId);
+            case "/get_consultation_center_schedule" -> this.handleConsultationCenterSchedule(chatId);
+            case "/get_admission_rules" -> this.handleAdmissionRules(chatId);
+            case "/get_open_days" -> this.handleOpenDays(chatId);
+            case "/enable_notifications" -> this.handleEnableNotification(update);
+            case "/disabled_notifications" -> this.handleDisabledNotification(chatId);
             case "/start" -> this.handleGreeting(chatId);
         }
     }
