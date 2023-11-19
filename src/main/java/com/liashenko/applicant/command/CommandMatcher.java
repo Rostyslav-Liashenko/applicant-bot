@@ -1,10 +1,7 @@
 package com.liashenko.applicant.command;
 
 import com.liashenko.applicant.bot.ApplicantBot;
-import com.liashenko.applicant.dtos.response.CostEducationResponseDto;
-import com.liashenko.applicant.dtos.response.DocumentAdmissionResponseDto;
-import com.liashenko.applicant.dtos.response.EducationProgramResponseDto;
-import com.liashenko.applicant.dtos.response.SpecialityResponseDto;
+import com.liashenko.applicant.dtos.response.*;
 import com.liashenko.applicant.service.*;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +17,7 @@ public class CommandMatcher {
     private final DocumentAdmissionService documentAdmissionService;
     private final SpecialityService specialityService;
     private final CostEducationService costEducationService;
+    private final AdmissionRuleService admissionRuleService;
     private final InfoService infoService;
     private final ApplicantBot applicantBot;
     private final TextFormatService textFormatService;
@@ -31,6 +29,7 @@ public class CommandMatcher {
             DocumentAdmissionService documentAdmissionService,
             SpecialityService specialityService,
             CostEducationService costEducationService,
+            AdmissionRuleService admissionRuleService,
             InfoService infoService,
             @Lazy ApplicantBot applicantBot
     ) {
@@ -40,6 +39,7 @@ public class CommandMatcher {
         this.costEducationService = costEducationService;
         this.specialityService = specialityService;
         this.textFormatService = textFormatService;
+        this.admissionRuleService = admissionRuleService;
         this.infoService = infoService;
     }
 
@@ -50,6 +50,7 @@ public class CommandMatcher {
             case "/getSpeciality" -> this.handleSpeciality(chatId);
             case "/getCostEducation" -> this.handleCostEducation(chatId);
             case "/getConsultationCenterSchedule" -> this.handleConsultationCenterSchedule(chatId);
+            case "/getAdmissionRules" -> this.handleAdmissionRules(chatId);
             case "/start" -> this.handleGreeting(chatId);
         }
     }
@@ -84,9 +85,7 @@ public class CommandMatcher {
         List<CostEducationResponseDto> costEducationResponseDtos = this.costEducationService.getAll();
 
         for (CostEducationResponseDto costEducationResponseDto: costEducationResponseDtos) {
-            String path = costEducationResponseDto.getPathToFile();
-            String caption = costEducationResponseDto.getDescription();
-            this.applicantBot.sendDocument(chatId, path, caption);
+            this.handleDocument(chatId, costEducationResponseDto);
         }
     }
 
@@ -97,5 +96,19 @@ public class CommandMatcher {
     public void handleConsultationCenterSchedule(Long chatId) {
         String messageAboutConsultationCenterSchedule = this.infoService.getConsultationCenterSchedule();
         this.applicantBot.sendMessage(chatId, messageAboutConsultationCenterSchedule);
+    }
+
+    public void handleAdmissionRules(Long chatId) {
+        List<AdmissionRuleResponseDto> admissionRules = this.admissionRuleService.getAll();
+
+        for (AdmissionRuleResponseDto admissionRuleResponseDto: admissionRules) {
+            this.handleDocument(chatId, admissionRuleResponseDto);
+        }
+    }
+
+    private void handleDocument(Long chatId, DocumentResponseDto documentResponseDto) {
+        String path = documentResponseDto.getPathToFile();
+        String caption = documentResponseDto.getDescription();
+        this.applicantBot.sendDocument(chatId, path, caption);
     }
 }
