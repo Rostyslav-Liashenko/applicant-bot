@@ -18,6 +18,7 @@ public class CommandMatcher {
     private final SpecialityService specialityService;
     private final CostEducationService costEducationService;
     private final AdmissionRuleService admissionRuleService;
+    private final OpenDayService openDayService;
     private final InfoService infoService;
     private final ApplicantBot applicantBot;
     private final TextFormatService textFormatService;
@@ -30,6 +31,7 @@ public class CommandMatcher {
             SpecialityService specialityService,
             CostEducationService costEducationService,
             AdmissionRuleService admissionRuleService,
+            OpenDayService openDayService,
             InfoService infoService,
             @Lazy ApplicantBot applicantBot
     ) {
@@ -38,6 +40,7 @@ public class CommandMatcher {
         this.documentAdmissionService = documentAdmissionService;
         this.costEducationService = costEducationService;
         this.specialityService = specialityService;
+        this.openDayService = openDayService;
         this.textFormatService = textFormatService;
         this.admissionRuleService = admissionRuleService;
         this.infoService = infoService;
@@ -51,6 +54,7 @@ public class CommandMatcher {
             case "/getCostEducation" -> this.handleCostEducation(chatId);
             case "/getConsultationCenterSchedule" -> this.handleConsultationCenterSchedule(chatId);
             case "/getAdmissionRules" -> this.handleAdmissionRules(chatId);
+            case "/getOpenDays" -> this.handleOpenDays(chatId);
             case "/start" -> this.handleGreeting(chatId);
         }
     }
@@ -104,6 +108,12 @@ public class CommandMatcher {
         for (AdmissionRuleResponseDto admissionRuleResponseDto: admissionRules) {
             this.handleDocument(chatId, admissionRuleResponseDto);
         }
+    }
+
+    public void handleOpenDays(Long chatId) {
+        List<OpenDayResponseDto> openDayResponseDtos = this.openDayService.getAll();
+        String messageText = this.textFormatService.OpenDayDtosToText(openDayResponseDtos);
+        this.applicantBot.sendMessage(chatId, messageText);
     }
 
     private void handleDocument(Long chatId, DocumentResponseDto documentResponseDto) {

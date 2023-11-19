@@ -2,9 +2,13 @@ package com.liashenko.applicant.service;
 
 import com.liashenko.applicant.dtos.response.DocumentAdmissionResponseDto;
 import com.liashenko.applicant.dtos.response.EducationProgramResponseDto;
+import com.liashenko.applicant.dtos.response.OpenDayResponseDto;
 import com.liashenko.applicant.dtos.response.SpecialityResponseDto;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -55,5 +59,34 @@ public class TextFormatService {
         }
 
         return stringBuilder.toString();
+    }
+
+    public String OpenDayDtosToText(List<OpenDayResponseDto> openDayResponseDtos) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (OpenDayResponseDto openDayResponseDto: openDayResponseDtos) {
+            String formattedDate = this.FormattedDate(openDayResponseDto.getDate());
+
+            stringBuilder
+                    .append(formattedDate)
+                    .append(" ")
+                    .append(openDayResponseDto.getDescription())
+                    .append("\n");
+        }
+
+        return stringBuilder.toString();
+    }
+
+    public String FormattedDate(Date date) {
+        LocalDate localDate = date
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        int day = localDate.getDayOfMonth();
+        int month = localDate.getMonth().getValue();
+        int year = localDate.getYear();
+
+        return day + "-" + month + "-" + year;
     }
 }
