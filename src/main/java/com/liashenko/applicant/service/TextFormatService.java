@@ -65,14 +65,21 @@ public class TextFormatService {
         StringBuilder stringBuilder = new StringBuilder();
 
         for (OpenDayResponseDto openDayResponseDto: openDayResponseDtos) {
-            String formattedDate = this.FormattedDate(openDayResponseDto.getDate());
-
-            stringBuilder
-                    .append(formattedDate)
-                    .append(" ")
-                    .append(openDayResponseDto.getDescription())
-                    .append("\n");
+            stringBuilder.append(this.OpenDayResponseDtoToText(openDayResponseDto));
         }
+
+        return stringBuilder.toString();
+    }
+
+    public String OpenDayResponseDtoToText(OpenDayResponseDto openDayResponseDto) {
+        StringBuilder stringBuilder = new StringBuilder();
+        String formattedDate = this.FormattedDate(openDayResponseDto.getDate());
+
+        stringBuilder
+                .append(openDayResponseDto.getDescription())
+                .append(" - ")
+                .append(formattedDate)
+                .append("\n");
 
         return stringBuilder.toString();
     }

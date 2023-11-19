@@ -8,8 +8,9 @@ import com.liashenko.applicant.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -33,6 +34,12 @@ public class UserService {
         return this.toDto(user);
     }
 
+    public List<UserResponseDto> getUserWithEnableNotification() {
+        List<User> users = this.userRepository.findByEnabledNotification(true);
+
+        return users.stream().map(this::toDto).collect(Collectors.toList());
+    }
+
     public void updateIsShowNotification(String chatId, boolean isShowNotification) {
         Optional<User> optionalUser = this.userRepository.findByChatId(chatId);
 
@@ -48,8 +55,8 @@ public class UserService {
 
         userResponseDto.setId(user.getId());
         userResponseDto.setFirstName(user.getFistName());
-        userResponseDto.setLastName(userResponseDto.getLastName());
-        userResponseDto.setChatId(userResponseDto.getChatId());
+        userResponseDto.setLastName(user.getLastName());
+        userResponseDto.setChatId(user.getChatId());
 
         return userResponseDto;
     }

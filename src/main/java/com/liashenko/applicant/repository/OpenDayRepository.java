@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface OpenDayRepository extends CrudRepository<OpenDay, UUID> {
-    @Query("SELECT od FROM OpenDay od WHERE od.date BETWEEN :currentDate AND :nextDate")
+    @Query("SELECT od FROM OpenDay od WHERE od.date BETWEEN :currentDate AND :nextDate ORDER BY od.date")
     List<OpenDay> findWithDateDifference(
             @Param("currentDate") Date currentDate,
             @Param("nextDate") Date nextDate
