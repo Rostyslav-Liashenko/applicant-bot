@@ -2,6 +2,10 @@ package com.liashenko.applicant.bot;
 
 import com.liashenko.applicant.command.CommandMatcher;
 import com.liashenko.applicant.service.FileService;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -22,6 +26,7 @@ import java.util.List;
 public class ApplicantBot extends TelegramLongPollingBot {
     private final CommandMatcher commandMatcher;
     private final FileService fileService;
+    private final Logger logger = LoggerFactory.getLogger(ApplicantBot.class);
 
     @Value("${bot.userName}")
     private String userName;
@@ -33,10 +38,19 @@ public class ApplicantBot extends TelegramLongPollingBot {
         this.fileService = fileService;
     }
 
+    @PostConstruct
+    public void postConstruct() {
+        this.logger.info("call post constructor on applicantBot...");
+    }
+
+    @PreDestroy()
+    public void preDestroy() {
+        this.logger.info("call pre destroy on applicantBoot...");
+    }
+
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage()) {
-            Long chatId = update.getMessage().getChatId();
             String messageText = update.getMessage().getText();
 
             this.commandMatcher.match(update, messageText);

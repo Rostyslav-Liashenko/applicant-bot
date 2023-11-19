@@ -29,7 +29,7 @@ public class NotificationService {
         this.textFormatService = textFormatService;
     }
 
-    @Scheduled(cron = "0 8,20 * * *")
+    @Scheduled(cron = "0 0 8,20 * * *")
     public void sendNotification() {
         int differenceDay = 3;
         List<OpenDayResponseDto> openDayResponseDtos = this.openDayService.getByDateDifferenceFromCurrentDate(differenceDay);
