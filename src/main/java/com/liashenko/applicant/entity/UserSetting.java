@@ -7,16 +7,15 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "user_settings")
+public class UserSetting {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String chatId;
-    private String fistName;
-    private String lastName;
+    private boolean isShowNotification;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private UserSetting userSetting;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

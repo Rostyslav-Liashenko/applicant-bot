@@ -39,7 +39,7 @@ public class ApplicantBot extends TelegramLongPollingBot {
             Long chatId = update.getMessage().getChatId();
             String messageText = update.getMessage().getText();
 
-            this.commandMatcher.match(chatId, messageText);
+            this.commandMatcher.match(update, messageText);
         } else if (update.hasCallbackQuery()) {
             String callbackData = update.getCallbackQuery().getData();
             Long chatId = update.getCallbackQuery().getMessage().getChatId();

@@ -1,14 +1,18 @@
 package com.liashenko.applicant.command;
 
 import com.liashenko.applicant.bot.ApplicantBot;
+import com.liashenko.applicant.dtos.request.UserRequestDto;
 import com.liashenko.applicant.dtos.response.*;
 import com.liashenko.applicant.service.*;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Component
@@ -19,6 +23,7 @@ public class CommandMatcher {
     private final CostEducationService costEducationService;
     private final AdmissionRuleService admissionRuleService;
     private final OpenDayService openDayService;
+    private final UserService userService;
     private final InfoService infoService;
     private final ApplicantBot applicantBot;
     private final TextFormatService textFormatService;
@@ -31,6 +36,7 @@ public class CommandMatcher {
             SpecialityService specialityService,
             CostEducationService costEducationService,
             AdmissionRuleService admissionRuleService,
+            UserService userService,
             OpenDayService openDayService,
             InfoService infoService,
             @Lazy ApplicantBot applicantBot
@@ -41,12 +47,16 @@ public class CommandMatcher {
         this.costEducationService = costEducationService;
         this.specialityService = specialityService;
         this.openDayService = openDayService;
+        this.userService = userService;
         this.textFormatService = textFormatService;
         this.admissionRuleService = admissionRuleService;
         this.infoService = infoService;
     }
 
-    public void match(Long chatId, String commandKey) {
+    public void match(Update update, String commandKey) {
+        Message message = update.getMessage();
+        Long chatId = message.getChatId();
+
         switch (commandKey) {
             case "/getEducationPrograms" -> this.handleEducationPrograms(chatId);
             case "/getDocumentAdmission" -> this.handleAdmissionDocument(chatId);
@@ -55,6 +65,8 @@ public class CommandMatcher {
             case "/getConsultationCenterSchedule" -> this.handleConsultationCenterSchedule(chatId);
             case "/getAdmissionRules" -> this.handleAdmissionRules(chatId);
             case "/getOpenDays" -> this.handleOpenDays(chatId);
+            case "/enableNotifications" -> this.handleEnableNotification(update);
+            case "/disabledNotifications" -> this.handleDisabledNotification(chatId);
             case "/start" -> this.handleGreeting(chatId);
         }
     }
@@ -114,6 +126,37 @@ public class CommandMatcher {
         List<OpenDayResponseDto> openDayResponseDtos = this.openDayService.getAll();
         String messageText = this.textFormatService.OpenDayDtosToText(openDayResponseDtos);
         this.applicantBot.sendMessage(chatId, messageText);
+    }
+
+    public void handleEnableNotification(Update update) {
+        Long chatId = update.getMessage().getChatId();
+
+        Optional<UserResponseDto> optionalUserResponseDto = this.userService.findByChatId(chatId);
+
+        if (optionalUserResponseDto.isPresent()) {
+            UserResponseDto userResponseDto = optionalUserResponseDto.get();
+            String userChatId = userResponseDto.getChatId();
+
+            this.userService.updateIsShowNotification(userChatId, true);
+        } else {
+            UserRequestDto userRequestDto = new UserRequestDto();
+
+            userRequestDto.setChatId(chatId.toString());
+            userRequestDto.setFirstName(update.getMessage().getFrom().getFirstName());
+            userRequestDto.setLastName(update.getMessage().getFrom().getLastName());
+            userRequestDto.setShowNotification(true);
+
+            this.userService.create(userRequestDto);
+        }
+
+        String text = "Ви успішно ввімкнули Увідомлення. Ми повідомимо вам про \"День відкритих дверей \" завчасно.";
+        this.applicantBot.sendMessage(chatId, text);
+    }
+
+    public void handleDisabledNotification(Long chatId) {
+        this.userService.updateIsShowNotification(chatId.toString(), false);
+        String text = "Ви вимкнули Увідомлення. Ми не будeмо вам більше повідомляти про \"День відкритих дверей \"";
+        this.applicantBot.sendMessage(chatId, text);
     }
 
     private void handleDocument(Long chatId, DocumentResponseDto documentResponseDto) {
