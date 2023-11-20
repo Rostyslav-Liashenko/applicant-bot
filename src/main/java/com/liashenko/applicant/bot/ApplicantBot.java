@@ -73,7 +73,7 @@ public class ApplicantBot extends TelegramLongPollingBot {
         try {
             execute(sendMessage);
         } catch (TelegramApiException telegramApiException) {
-            System.out.println("Error: " + telegramApiException.getMessage());
+            logger.error("Error: " + telegramApiException.getMessage());
         }
     }
 
@@ -86,14 +86,14 @@ public class ApplicantBot extends TelegramLongPollingBot {
             InputFile file = this.fileService.getFileByPath(path);
             sendDocument.setDocument(file);
         } catch (IOException exception) {
-            System.out.println("problem with file by path:" + path);
+            logger.error("problem with file by path:" + path);
             return;
         }
 
         try {
             execute(sendDocument);
         } catch (TelegramApiException telegramApiException) {
-            System.out.println("Error: " + telegramApiException.getMessage());
+            logger.error("Error: " + telegramApiException.getMessage());
         }
     }
 
@@ -106,7 +106,7 @@ public class ApplicantBot extends TelegramLongPollingBot {
         try {
             execute(sendMessage);
         } catch (TelegramApiException telegramApiException) {
-            System.out.println("Error: " + telegramApiException.getMessage());
+            logger.error("Error: " + telegramApiException.getMessage());
         }
     }
 
